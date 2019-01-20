@@ -36,6 +36,10 @@ impl Vector3 {
         n.normalize();
         n
     }
+
+    pub fn dot(a: &Vector3, b: &Vector3) -> f64 {
+        a.x * b.x + a.y * b.y + a.z * b.z
+    }
 }
 
 impl Add for Vector3 {

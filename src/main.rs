@@ -4,8 +4,8 @@ mod tracing;
 use geometry::{Vector3, Ray};
 
 fn main() {
-    let nx = 200;
-    let ny = 100;
+    let nx = 800;
+    let ny = 400;
 
     println!("P3\n{} {}\n255", nx, ny);
 
