@@ -3,12 +3,13 @@
 use std::f64;
 
 use crate::geometry::{Vector3, Ray};
-use crate::utils;
+use crate::material::{Material};
 
-pub struct HitRecord {
+pub struct HitRecord<'a> {
     pub t: f64,
     pub point: Vector3,
     pub normal: Vector3,
+    pub material: &'a Material
 }
 
 pub trait Hit {
@@ -51,10 +52,14 @@ impl<'a> Hit for HitWorld<'a> {
     }
 }
 
-pub fn ray_color(r: &Ray, target: &Hit) -> Vector3 {
+pub fn ray_color(r: &Ray, target: &Hit, depth: f64) -> Vector3 {
     if let Some(h) = target.hit(r, 0.001, f64::MAX) {
-        let tangent = h.point + h.normal + utils::random_in_unit_sphere();
-        ray_color(&Ray::new(h.point, tangent - h.point), target) * 0.5
+        if depth < 50.0 {
+            if let Some((attenuation, scattered)) = h.material.scatter(&r, &h) {
+                return attenuation * ray_color(&scattered, target, depth + 1.0)
+            }
+        }
+        return Vector3::new(0.0, 0.0, 0.0)
     } else {
         let t = 0.5 * (r.direction.y + 1.0);
         Vector3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vector3::new(0.5, 0.7, 1.0) * t

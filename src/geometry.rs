@@ -3,6 +3,7 @@
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use crate::tracing::{Hit, HitRecord};
+use crate::material::{Material};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Vector3 {
@@ -36,6 +37,10 @@ impl Vector3 {
 
     pub fn dot(a: &Vector3, b: &Vector3) -> f64 {
         a.x * b.x + a.y * b.y + a.z * b.z
+    }
+
+    pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
+        *v - *n * Vector3::dot(&v, &n) * 2.0
     }
 }
 
@@ -79,6 +84,28 @@ impl SubAssign for Vector3 {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
+        };
+    }
+}
+
+impl Mul for Vector3 {
+    type Output = Vector3;
+
+    fn mul(self, other: Vector3) -> Vector3 {
+        Vector3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
+        }
+    }
+}
+
+impl MulAssign for Vector3 {
+    fn mul_assign(&mut self, other: Vector3) {
+        *self = Vector3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
         };
     }
 }
@@ -143,19 +170,19 @@ impl Ray {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
-pub struct Sphere {
+pub struct Sphere<'a> {
     pub center: Vector3,
     pub radius: f64,
+    pub material: Box<Material + 'a>,
 }
 
-impl Sphere {
-    pub fn new(center: Vector3, radius: f64) -> Sphere {
-        Sphere {center, radius}
+impl<'a> Sphere<'a> {
+    pub fn new<T: 'a + Material>(center: Vector3, radius: f64, material: T) -> Sphere<'a> {
+        Sphere {center, radius, material: Box::new(material)}
     }
 }
 
-impl Hit for Sphere {
+impl<'a> Hit for Sphere<'a> {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = ray.origin  - self.center;
         let a = Vector3::dot(&ray.direction, &ray.direction);
@@ -174,6 +201,7 @@ impl Hit for Sphere {
                     t,
                     point: p,
                     normal: (p - self.center) / self.radius,
+                    material: &*self.material
                 });
             }
         }

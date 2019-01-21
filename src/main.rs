@@ -1,22 +1,26 @@
 mod geometry;
 mod tracing;
+mod material;
 mod utils;
 
 use rand::prelude::*;
 
 use geometry::{Vector3, Sphere};
 use tracing::{HitWorld, Camera};
+use material::{Lambertian, Metal};
 
 fn main() {
     let nx = 800;
     let ny = 400;
-    let ns = 100;
+    let ns = 20;
 
     println!("P3\n{} {}\n255", nx, ny);
 
     let mut world = HitWorld::new();
-    world.add(Sphere::new(Vector3::new(0.0, 0.0, -1.0), 0.5));
-    world.add(Sphere::new(Vector3::new(0.0, -100.5, -1.0), 100.0));
+    world.add(Sphere::new(Vector3::new(0.0, 0.0, -1.0), 0.5, Lambertian::new(Vector3::new(0.8, 0.3, 0.3))));
+    world.add(Sphere::new(Vector3::new(0.0, -100.5, -1.0), 100.0, Lambertian::new(Vector3::new(0.8, 0.8, 0.0))));
+    world.add(Sphere::new(Vector3::new(1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.6, 0.2), 0.3)));
+    world.add(Sphere::new(Vector3::new(-1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.8, 0.8), 1.0)));
 
     let camera = Camera::new();
 
@@ -27,7 +31,7 @@ fn main() {
                 let u = (x as f64 + random::<f64>()) / (nx as f64);
                 let v = (y as f64 + random::<f64>()) / (ny as f64);
                 let r = camera.get_ray(u, v);
-                color += tracing::ray_color(&r, &world);
+                color += tracing::ray_color(&r, &world, 0.0);
             }
 
             color /= ns as f64;
