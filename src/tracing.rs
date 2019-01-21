@@ -58,3 +58,26 @@ pub fn ray_color(r: &Ray, target: &Hit) -> Vector3 {
         Vector3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vector3::new(0.5, 0.7, 1.0) * t
     }
 }
+
+#[derive(Debug)]
+pub struct Camera {
+    pub origin: Vector3,
+    pub lower_left_corner: Vector3,
+    pub horizontal: Vector3,
+    pub vertical: Vector3,
+}
+
+impl Camera {
+    pub fn new() -> Camera {
+        Camera {
+            origin: Vector3::new(0.0, 0.0, 0.0),
+            lower_left_corner: Vector3::new(-2.0, -1.0, -1.0),
+            horizontal: Vector3::new(4.0, 0.0, 0.0),
+            vertical: Vector3::new(0.0, 2.0, 0.0),
+        }
+    }
+
+    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
+        Ray::new(self.origin, self.lower_left_corner + self.horizontal * u + self.vertical * v - self.origin)
+    }
+}
