@@ -7,7 +7,7 @@ use rand::prelude::*;
 
 use geometry::{Vector3, Sphere};
 use tracing::{HitWorld, Camera};
-use material::{Lambertian, Metal};
+use material::{Lambertian, Metal, Dielectric};
 
 fn main() {
     let nx = 800;
@@ -20,7 +20,7 @@ fn main() {
     world.add(Sphere::new(Vector3::new(0.0, 0.0, -1.0), 0.5, Lambertian::new(Vector3::new(0.8, 0.3, 0.3))));
     world.add(Sphere::new(Vector3::new(0.0, -100.5, -1.0), 100.0, Lambertian::new(Vector3::new(0.8, 0.8, 0.0))));
     world.add(Sphere::new(Vector3::new(1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.6, 0.2), 0.3)));
-    world.add(Sphere::new(Vector3::new(-1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.8, 0.8), 1.0)));
+    world.add(Sphere::new(Vector3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5)));
 
     let camera = Camera::new();
 

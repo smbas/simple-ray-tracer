@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+use std::ops::{Neg, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 use crate::tracing::{Hit, HitRecord};
 use crate::material::{Material};
@@ -41,6 +41,30 @@ impl Vector3 {
 
     pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
         *v - *n * Vector3::dot(&v, &n) * 2.0
+    }
+
+    pub fn refract(v: &Vector3, n: &Vector3, ni_over_nt: f64) -> Option<Vector3> {
+        let uv = v.normalized();
+        let dt = Vector3::dot(&uv, &n);
+        let discriminant = 1.0 - ni_over_nt * ni_over_nt * (1.0 - dt * dt);
+
+        if discriminant > 0.0 {
+            Some((uv - *n * dt) * ni_over_nt - *n * discriminant.sqrt())
+        } else {
+            None
+        }
+    }
+}
+
+impl Neg for Vector3 {
+    type Output = Vector3;
+
+    fn neg(self) -> Vector3 {
+        Vector3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
     }
 }
 
