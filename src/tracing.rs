@@ -3,6 +3,7 @@
 use std::f64;
 
 use crate::geometry::{Vector3, Ray};
+use crate::utils;
 
 pub struct HitRecord {
     pub t: f64,
@@ -51,8 +52,9 @@ impl<'a> Hit for HitWorld<'a> {
 }
 
 pub fn ray_color(r: &Ray, target: &Hit) -> Vector3 {
-    if let Some(h) = target.hit(r, 0.0, f64::MAX) {
-        Vector3::new(h.normal.x + 1.0, h.normal.y + 1.0, h.normal.z + 1.0) * 0.5
+    if let Some(h) = target.hit(r, 0.001, f64::MAX) {
+        let tangent = h.point + h.normal + utils::random_in_unit_sphere();
+        ray_color(&Ray::new(h.point, tangent - h.point), target) * 0.5
     } else {
         let t = 0.5 * (r.direction.y + 1.0);
         Vector3::new(1.0, 1.0, 1.0) * (1.0 - t) + Vector3::new(0.5, 0.7, 1.0) * t

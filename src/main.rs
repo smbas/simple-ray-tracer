@@ -1,5 +1,6 @@
 mod geometry;
 mod tracing;
+mod utils;
 
 use rand::prelude::*;
 
@@ -30,6 +31,8 @@ fn main() {
             }
 
             color /= ns as f64;
+            color = Vector3::new(color.x.sqrt(), color.y.sqrt(), color.z.sqrt());
+
             let ir = (255.99f64 * color.x) as i32;
             let ig = (255.99f64 * color.y) as i32;
             let ib = (255.99f64 * color.z) as i32;
