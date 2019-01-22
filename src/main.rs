@@ -22,12 +22,16 @@ fn main() {
     world.add(Sphere::new(Vector3::new(1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.6, 0.2), 0.3)));
     world.add(Sphere::new(Vector3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5)));
 
+    let lookfrom = Vector3::new(3.0, 3.0, 2.0);
+    let lookat = Vector3::new(0.0, 0.0, -1.0);
     let camera = Camera::new(
-        Vector3::new(-2.0, 2.0, 1.0),
-        Vector3::new(0.0, 0.0, -1.0),
+        lookfrom,
+        lookat,
         Vector3::new(0.0, 1.0, 0.0),
         60.0,
         (nx as f64) / (ny as f64),
+        0.4,
+        (lookat - lookfrom).length(),
     );
 
     for y in (0..ny).rev() {

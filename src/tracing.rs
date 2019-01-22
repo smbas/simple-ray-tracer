@@ -4,6 +4,7 @@ use std::f64;
 
 use crate::geometry::{Vector3, Ray};
 use crate::material::{Material};
+use crate::utils;
 
 pub struct HitRecord<'a> {
     pub t: f64,
@@ -72,10 +73,14 @@ pub struct Camera {
     pub lower_left_corner: Vector3,
     pub horizontal: Vector3,
     pub vertical: Vector3,
+    pub u: Vector3,
+    pub v: Vector3,
+    pub w: Vector3,
+    pub lens_radius: f64,
 }
 
 impl Camera {
-    pub fn new(lookfrom: Vector3, lookat: Vector3, vup: Vector3, vfov: f64, aspect: f64) -> Camera {
+    pub fn new(lookfrom: Vector3, lookat: Vector3, vup: Vector3, vfov: f64, aspect: f64, aperture: f64, focus_distance: f64) -> Camera {
         let theta = vfov * f64::consts::PI / 180.0;
         let half_height = (theta / 2.0).tan();
         let half_width = aspect * half_height;
@@ -85,13 +90,19 @@ impl Camera {
 
         Camera {
             origin: lookfrom,
-            lower_left_corner: lookfrom - u * half_width - v * half_height - w,
-            horizontal: u * half_width * 2.0,
-            vertical: v * half_height * 2.0,
+            lower_left_corner: lookfrom - u * half_width * focus_distance - v * half_height * focus_distance - w * focus_distance,
+            horizontal: u * half_width * focus_distance * 2.0,
+            vertical: v * half_height * focus_distance * 2.0,
+            u,
+            v,
+            w,
+            lens_radius: aperture / 2.0,
         }
     }
 
-    pub fn get_ray(&self, u: f64, v: f64) -> Ray {
-        Ray::new(self.origin, self.lower_left_corner + self.horizontal * u + self.vertical * v - self.origin)
+    pub fn get_ray(&self, s: f64, t: f64) -> Ray {
+        let rd = utils::random_in_unit_disk() * self.lens_radius;
+        let offset = self.u * rd.x + self.v * rd.y;
+        Ray::new(self.origin + offset, self.lower_left_corner + self.horizontal * s + self.vertical * t - self.origin - offset)
     }
 }
