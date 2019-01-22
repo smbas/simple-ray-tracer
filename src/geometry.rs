@@ -39,6 +39,14 @@ impl Vector3 {
         a.x * b.x + a.y * b.y + a.z * b.z
     }
 
+    pub fn cross(a: &Vector3, b: &Vector3) -> Vector3 {
+        Vector3 {
+            x: a.y * b.z - a.z * b.y,
+            y: a.z * b.x - a.x * b.z,
+            z: a.x * b.y - a.y * b.x,
+        }
+    }
+
     pub fn reflect(v: &Vector3, n: &Vector3) -> Vector3 {
         *v - *n * Vector3::dot(&v, &n) * 2.0
     }

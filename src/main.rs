@@ -22,7 +22,13 @@ fn main() {
     world.add(Sphere::new(Vector3::new(1.0, 0.0, -1.0), 0.5, Metal::new(Vector3::new(0.8, 0.6, 0.2), 0.3)));
     world.add(Sphere::new(Vector3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5)));
 
-    let camera = Camera::new();
+    let camera = Camera::new(
+        Vector3::new(-2.0, 2.0, 1.0),
+        Vector3::new(0.0, 0.0, -1.0),
+        Vector3::new(0.0, 1.0, 0.0),
+        60.0,
+        (nx as f64) / (ny as f64),
+    );
 
     for y in (0..ny).rev() {
         for x in 0..nx {
